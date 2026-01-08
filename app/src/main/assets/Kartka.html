@@ -94,48 +94,37 @@
 </div>
 
 <script>
-    // Czekamy aż strona się załaduje
-    window.onload = function() {
-        var input = document.getElementById("nazwaPrezentu");
+    // UWAGA: Tu nie może być window.onload z addEventListener!
+    // Kartka tylko wyświetla dane, nie przyjmuje wpisywania.
 
-        // Nasłuchujemy wciśnięcia klawisza w polu tekstowym
-        input.addEventListener("keypress", function(event) {
-            // Jeśli klawisz to Enter (kod 13)
-            if (event.key === "Enter") {
-                // Anuluj standardowe zachowanie (żeby nie odświeżało strony)
-                event.preventDefault();
-                // "Kliknij" programowo przycisk dodawania
-                dodajPrezent();
-            }
-        });
-    }
     function zaladujDane() {
-        // Prezenty
+        // 1. Prezenty
         try {
             var dane = Interfejs.pobierzPrezenty();
-            document.getElementById("listaZyczen").innerHTML = dane;
-        } catch(e) {}
+            // Zabezpieczenie: jeśli pusto, wpisz komunikat
+            if (!dane || dane === "") {
+                document.getElementById("listaZyczen").innerHTML = "Brak prezentów :(";
+            } else {
+                document.getElementById("listaZyczen").innerHTML = dane;
+            }
+        } catch(e) {
+            console.log("Błąd prezentów: " + e);
+        }
 
-        // Zdjęcie
+        // 2. Zdjęcie
         try {
             var fotka = Interfejs.pobierzZdjecie();
             if (fotka && fotka.length > 0) {
                 var img = document.getElementById("znaczekImg");
                 img.src = fotka;
                 img.style.display = "block";
+                // Ukryj tekst "Miejsce na znaczek" jeśli obrazek wskoczył
+                var tekst = document.getElementById("znaczekTekst");
+                if(tekst) tekst.style.display = "none";
             }
         } catch(e) {
-        // Wypisz błąd w konsoli (zobaczysz to w Logcat w Android Studio)
-        console.log("Błąd podczas ładowania zdjęcia: " + e);
-        // Opcjonalnie: Pokaż błąd na ekranie, żebyś widziała od razu
-        // alert("Błąd fotki: " + e);
-    }
-
-        // GPS (Zadanie 3 - przygotowanie)
-        try {
-            // var gps = Interfejs.pobierzLokalizacje();
-            // if(gps) document.getElementById("daneNadawcy").innerHTML = gps;
-        } catch(e) {}
+            console.log("Błąd zdjęcia: " + e);
+        }
     }
 </script>
 </body>
