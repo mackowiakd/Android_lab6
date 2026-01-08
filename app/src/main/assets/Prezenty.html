@@ -1,20 +1,77 @@
+<!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Życzeń</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #e0f7fa; /* Zimowy kolor tła */
+        }
+        input[type=text] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            font-size: 18px;
+        }
+        button {
+            background-color: #008CBA;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+        button:hover { opacity: 0.8; }
+        #lista {
+            background-color: white;
+            min-height: 100px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .prezent { border-bottom: 1px solid #eee; padding: 5px; }
+    </style>
+</head>
 <body>
-<center>
-    <input type="text" id="name"/><br>
-    <input type="text" id="date"/><br>
-    <button onclick="hello()">Przywitaj się</button><br>
-    <button onclick="whatdate()">Data?</button><br>
-</center>
+
+<h2 style="text-align:center; color:#006064;">Twoja lista do Mikołaja</h2>
+
+<input type="text" id="nazwaPrezentu" placeholder="Wpisz prezent...">
+
+<button onclick="dodajPrezent()">Dodaj</button>
+<button onclick="generujKartke()" style="background-color: #f44336;">Generuj</button>
+
+<h3>Lista prezentów:</h3>
+<div id="lista"></div>
+
 <script type="text/javascript">
-    function hello()
-    {
-        activity.sayHello(document.getElementById("name").value);
+    function dodajPrezent() {
+        var pole = document.getElementById("nazwaPrezentu");
+        var prezent = pole.value;
+
+        if (prezent.length > 0) {
+            // 1. Wyświetl w HTML (dla użytkownika)
+            var listaDiv = document.getElementById("lista");
+            listaDiv.innerHTML += "<div class='prezent'>🎁 " + prezent + "</div>";
+
+            // 2. Wyślij do Kotlina (do ArrayList)
+            // Obiekt 'Interfejs' to nazwa, którą nadamy w pliku Kotlin
+            Interfejs.dodajDoListy(prezent);
+
+            pole.value = ""; // Wyczyść pole
+        }
     }
-    function whatdate()
-    {
-        document.getElementById("date").value=activity.getDate();
+
+    function generujKartke() {
+        // Przejście do drugiej aktywności
+        Interfejs.idzDoKartki();
     }
 </script>
+
 </body>
 </html>

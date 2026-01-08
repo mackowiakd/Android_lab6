@@ -1,5 +1,142 @@
+<!DOCTYPE html>
 <html>
-<body>
-Na razie tutaj jest pusto.
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+        }
+
+        .kartka-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            /* Zabezpieczenie: nie pozwól kartce być szerszą niż ekran pozwala zachować proporcje */
+            max-width: 100%;
+            aspect-ratio: 16/9; /* Zakładamy standardowe proporcje. Jeśli Twoja jest inna, zmień np. na 4/3 */
+
+            /* Tło z Twojego pliku */
+            background: url('kartka.png') no-repeat center center;
+            background-size: 100% 100%; /* Rozciągnij obrazek na cały kontener */
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- STREFY DANYCH (możesz zmieniać % żeby przesuwać) --- */
+
+        /* 1. LISTA PREZENTÓW (Lewa strona, pod napisem) */
+        #listaZyczen {
+            position: absolute;
+            /* Przesuwamy w dół, żeby ominąć napis "Lista prezentów" na obrazku */
+            top: 30%;
+            left: 5%;
+            width: 45%;  /* Szerokość listy */
+            height: 60%; /* Wysokość obszaru listy */
+            overflow-y: auto; /* Przewijanie jak jest długa */
+
+            color: #000080; /* Granatowy długopis */
+            font-size: 5vh; /* Duża czcionka */
+            line-height: 1.3;
+            font-weight: bold;
+        }
+
+        /* 2. ZNACZEK / ZDJĘCIE (Prawy górny róg) */
+        .znaczek-ramka {
+            position: absolute;
+            top: 8%;      /* Odległość od góry */
+            right: 5%;    /* Odległość od prawej */
+            width: 18%;   /* Szerokość znaczka */
+            aspect-ratio: 1/1.3;
+            /* border: 1px solid red; <--- Odkomentuj, żeby zobaczyć ramkę przy celowaniu */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 3. NADAWCA / GPS (Lewy górny róg - wg Twojego opisu) */
+        .nadawca {
+            position: absolute;
+            top: 10%;     /* Odległość od góry */
+            left: 40%;    /* Odległość od lewej */
+            width: 40%;  /* Ile miejsca na tekst */
+
+            font-size: 3vh; /* Mniejsza czcionka dla danych GPS */
+            color: #333;
+            text-align: left;
+        }
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body onload="zaladujDane()">
+
+<div class="kartka-container">
+
+    <div id="listaZyczen"></div>
+
+    <div class="znaczek-ramka">
+        <img id="znaczekImg" src="" style="display: none;">
+    </div>
+
+    <div class="nadawca" id="daneNadawcy">
+        Brak danych GPS
+    </div>
+
+</div>
+
+<script>
+    // Czekamy aż strona się załaduje
+    window.onload = function() {
+        var input = document.getElementById("nazwaPrezentu");
+
+        // Nasłuchujemy wciśnięcia klawisza w polu tekstowym
+        input.addEventListener("keypress", function(event) {
+            // Jeśli klawisz to Enter (kod 13)
+            if (event.key === "Enter") {
+                // Anuluj standardowe zachowanie (żeby nie odświeżało strony)
+                event.preventDefault();
+                // "Kliknij" programowo przycisk dodawania
+                dodajPrezent();
+            }
+        });
+    }
+    function zaladujDane() {
+        // Prezenty
+        try {
+            var dane = Interfejs.pobierzPrezenty();
+            document.getElementById("listaZyczen").innerHTML = dane;
+        } catch(e) {}
+
+        // Zdjęcie
+        try {
+            var fotka = Interfejs.pobierzZdjecie();
+            if (fotka && fotka.length > 0) {
+                var img = document.getElementById("znaczekImg");
+                img.src = fotka;
+                img.style.display = "block";
+            }
+        } catch(e) {
+        // Wypisz błąd w konsoli (zobaczysz to w Logcat w Android Studio)
+        console.log("Błąd podczas ładowania zdjęcia: " + e);
+        // Opcjonalnie: Pokaż błąd na ekranie, żebyś widziała od razu
+        // alert("Błąd fotki: " + e);
+    }
+
+        // GPS (Zadanie 3 - przygotowanie)
+        try {
+            // var gps = Interfejs.pobierzLokalizacje();
+            // if(gps) document.getElementById("daneNadawcy").innerHTML = gps;
+        } catch(e) {}
+    }
+</script>
 </body>
 </html>

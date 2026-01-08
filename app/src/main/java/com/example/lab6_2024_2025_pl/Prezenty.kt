@@ -1,40 +1,47 @@
 package com.example.lab6_2024_2025_pl
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.widget.Toast
-import java.util.*
+import androidx.appcompat.app.AppCompatActivity
 
 class Prezenty : AppCompatActivity() {
+
+    // Lista prezentów (zgodnie z instrukcją ArrayList)
+    private val listaPrezentow = ArrayList<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //WebView - kontrolka wyswietlajaca html
-        val page = WebView(this)
+        // Konfiguracja WebView
+        val webView = WebView(this)
+        webView.settings.javaScriptEnabled = true
 
-        //wlaczenie obslugi JS
-        page.settings.javaScriptEnabled=true
+        // Dodajemy interfejs JS pod nazwą "Interfejs"
+        webView.addJavascriptInterface(this, "Interfejs")
 
-        //dodanie interfejsu pomiędzy Kotlinem a JS
-        //this - obiekt tej klasy dostarcza metody JSInterface, activity - nazwa widoczna w JS
-        page.addJavascriptInterface(this, "activity")
+        // Ładujemy plik z assets
+        webView.loadUrl("file:///android_asset/Prezenty.html")
 
-        //zaladowanie zawartosci kontroli WebView - pliki z katalogu assests w projekcie
-        page.loadUrl("file:///android_asset/Prezenty.html")
-
-        //wstawienie kontrolki WebView jako calej fasady aktywnosci
-        setContentView(page)
+        setContentView(webView)
     }
 
-    @JavascriptInterface //adnotacja sygnalizujaca ze metoda bedzie dostepna z poziomu JS
-    fun sayHello(name: String) {
-        Toast.makeText(this, name, Toast.LENGTH_SHORT).show()
-    }
-
+    // Metoda wywoływana z JS: Interfejs.dodajDoListy("Rower")
     @JavascriptInterface
-    fun getDate(): String {
-        return Date().toString()
+    fun dodajDoListy(prezent: String) {
+        listaPrezentow.add(prezent)
+    }
+
+    // Metoda wywoływana z JS: Interfejs.idzDoKartki()
+    @JavascriptInterface
+    fun idzDoKartki() {
+        val intent = Intent(this, Kartka::class.java)
+
+        // Zamieniamy listę na jednego długiego Stringa HTML [cite: 4915]
+        val prezentyHtml = listaPrezentow.joinToString(separator = "<br>")
+        intent.putExtra("LISTA_ZYCZEN", prezentyHtml)
+
+        startActivity(intent)
     }
 }

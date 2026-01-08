@@ -1,29 +1,33 @@
 package com.example.lab6_2024_2025_pl
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.appcompat.app.AppCompatActivity
 
 class Kartka : AppCompatActivity() {
+
+    private var prezentyString: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //WebView - kontrolka wyswietlajaca html
-        val page = WebView(this)
+        // Pobieramy dane przekazane z poprzedniej aktywności [cite: 4877-4881]
+        prezentyString = intent.getStringExtra("LISTA_ZYCZEN") ?: "Brak prezentów"
 
-        //wlaczenie obslugi JS
-        page.settings.javaScriptEnabled=true
+        val webView = WebView(this)
+        webView.settings.javaScriptEnabled = true
 
-        //dodanie interfejsu pomiędzy Kotlinem a JS
-        //this - obiekt tej klasy dostarcza metody JSInterface, activity - nazwa widoczna w JS
-        //page.addJavascriptInterface(this, "activity") //ODKOMENTOWAC DLA JS
+        // Dodajemy interfejs JS
+        webView.addJavascriptInterface(this, "Interfejs")
 
-        //zaladowanie zawartosci kontroli WebView - pliki z katalogu assests w projekcie
-        page.loadUrl("file:///android_asset/Kartka.html")
+        webView.loadUrl("file:///android_asset/Kartka.html")
+        setContentView(webView)
+    }
 
-        //wstawienie kontrolki WebView jako calej fasady aktywnosci
-        setContentView(page)
-
-
+    // Metoda wywoływana z JS przy załadowaniu strony
+    @JavascriptInterface
+    fun pobierzPrezenty(): String {
+        return prezentyString
     }
 }
